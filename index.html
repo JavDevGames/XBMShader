@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>XBM Shader</title>
+  <meta charset="utf-8">
+</head>
+
+<script src="js/three.min_01.js"></script>
+
+<script src="js/shaders/CopyShader.js"></script>
+<script src="js/shaders/XMBShader.js?v=1"></script>
+
+<script src="js/postprocessing/EffectComposer.js"></script>
+<script src="js/postprocessing/RenderPass.js"></script>
+<script src="js/postprocessing/ShaderPass.js"></script>
+<script src="js/postprocessing/MaskPass.js"></script>
+
+<body style='background-color: #000000'><script>
+
+	var camera, scene, webglRenderer;
+
+	var composer;
+	var xmbshaderPass;
+	var shaderTime = 0;
+	
+	init();
+	animate();
+	
+	function init() 
+	{
+		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 4000 );
+		camera.position.set( 500, -300, 600 );
+
+		scene = new THREE.Scene();
+		
+		webglRenderer = new THREE.WebGLRenderer();
+		webglRenderer.setPixelRatio( window.devicePixelRatio );
+		webglRenderer.setSize( window.innerWidth, window.innerHeight );
+		webglRenderer.domElement.style.position = 'absolute';
+		webglRenderer.domElement.style.top = 0;
+		document.body.appendChild( webglRenderer.domElement );
+		
+		setupShaders();
+	}
+	
+	function animate() 
+	{
+		requestAnimationFrame( animate );
+
+		shaderTime += 0.1;
+		xmbshaderPass.uniforms['time'].value = shaderTime;
+		
+		composer.render();
+	}
+	
+	function setupShaders()
+	{
+		composer = new THREE.EffectComposer( webglRenderer );
+		composer.addPass( new THREE.RenderPass( scene, camera ) );
+
+		xmbshaderPass = new THREE.ShaderPass( THREE.XMBShader );
+		xmbshaderPass.renderToScreen = true;
+		composer.addPass( xmbshaderPass );
+	}
+	
+</script></body>
